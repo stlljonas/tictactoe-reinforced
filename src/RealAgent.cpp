@@ -22,7 +22,7 @@ Action RealAgent::nextAction(const Board board) const {
             std::cout << "ERROR: Invalid Input!\n";
         } else {
             auto it = freePos.begin();
-            std::advance(it, selection);
+            std::advance(it, selection-1);
             return Action{id(), *it};
         }
     }
