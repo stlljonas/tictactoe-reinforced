@@ -18,13 +18,13 @@ int main (int argc, char *argv[]) {
         switch(ttt.gameState()) {
             case GameState::START: {
                 std::cout << "Tic Tac Toe!\n";
-                 std::cout << "Type s to start!\n"
-                << "Type e to exit.\n"
-                << "Press Enter to confirm." << std::endl;
+                 std::cout << "Type \"s\" to start, \"e\" to exit!\n"
+                << "Press Enter to confirm ";
                 std::string selection;
                 std::cin >> selection;
                 if (selection == "s") {
                     ttt.start(player1);
+                    std::cout << ttt.string() << std::endl;
                 } else if (selection == "e") {
                     std::cout << "Terminating.\n";
                     ttt.exit();
@@ -34,31 +34,26 @@ int main (int argc, char *argv[]) {
                 break;
             }
             case GameState::TURN_PLAYER: {
-                std::cout << ttt.string() << std::endl;
                 if (ttt.currentPlayerId() == player1.id()) {
                     ttt.round(player1.nextAction(ttt.board()));  
                 } else if (ttt.currentPlayerId() == player2.id()) {
                     ttt.round(player2.nextAction(ttt.board()));  
                 }
+                std::cout << ttt.string() << std::endl;
                 break;
             }
             case GameState::WIN_PLAYER_1: {
-                std::cout << "\n\n" << player1.name() << " won!\n"
-                    << "Press enter to continue..\n\n\n";
-                std::cin;
+                std::cout << "\n\n" << player1.name() << " won!\n\n\n";
                 ttt.reset();
+                break;
             }
             case GameState::WIN_PLAYER_2: {
-                std::cout << "\n\n" << player2.name() << " won!\n"
-                    << "Press enter to continue..\n\n\n";
-                std::cin;
+                std::cout << "\n\n" << player2.name() << " won!\n\n\n";
                 ttt.reset();
                 break;
             }
             case GameState::TIE:
-                std::cout << "\n\n" << "There is a tie!\n"
-                    << "Press enter to continue..\n\n\n";
-                std::cin;
+                std::cout << "\n\n" << "There was a tie!\n\n\n";
                 ttt.reset();
                 break;
             default:
