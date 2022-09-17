@@ -43,21 +43,21 @@ int main (int argc, char *argv[]) {
                 break;
             }
             case GameState::WIN_PLAYER_1: {
-                std::cout << player1.name() << " won!\n"
-                    << "Press enter to continue..\n";
+                std::cout << "\n\n" << player1.name() << " won!\n"
+                    << "Press enter to continue..\n\n\n";
                 std::cin;
                 ttt.reset();
             }
             case GameState::WIN_PLAYER_2: {
-                std::cout << player2.name() << " won!\n"
-                    << "Press enter to continue..\n";
+                std::cout << "\n\n" << player2.name() << " won!\n"
+                    << "Press enter to continue..\n\n\n";
                 std::cin;
                 ttt.reset();
                 break;
             }
             case GameState::TIE:
-                std::cout << "There is a tie!\n"
-                    << "Press enter to continue..\n";
+                std::cout << "\n\n" << "There is a tie!\n"
+                    << "Press enter to continue..\n\n\n";
                 std::cin;
                 ttt.reset();
                 break;
