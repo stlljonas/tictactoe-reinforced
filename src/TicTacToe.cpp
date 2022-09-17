@@ -143,24 +143,28 @@ bool TicTacToe::_isWinner(const int id) const {
     // check horizontal
     for(int i = 0; i < 3; ++i) {
         if (_board.array[0][i] == _board.array[1][i]
-            == _board.array[2][i] == id) {
+            && _board.array[0][i] == _board.array[2][i]
+            && _board.array[0][i] == id) {
             return true;
         }
     }
     // check vertical
     for (int i = 0; i < 3; ++i) {
         if (_board.array[i][0] == _board.array[i][1]
-            == _board.array[i][2] == id) {
+            && _board.array[i][0] == _board.array[i][2]
+            && _board.array[i][0] == id) {
             return true;
         }
     }
     // check diagonal
     if (_board.array[0][0] == _board.array[1][1]
-        == _board.array[2][2] == id) {
+        && _board.array[0][0] == _board.array[2][2]
+        && _board.array[0][0] == id) {
         return true;
     }
-    if (_board.array[2][0] == _board.array[1][1]
-        == _board.array[0][2] == id) {
+    if (_board.array[0][2] == _board.array[1][1]
+        && _board.array[0][2] == _board.array[2][0]
+        && _board.array[0][2] == id) {
         return true;
     }
     return false;
