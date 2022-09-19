@@ -1,12 +1,12 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include "Board.h"
+#include "BoardEntry.h"
 
 struct Action {
-    Action(int id_, BoardPosition pos_)
+    Action(BoardEntry id_, BoardPosition pos_)
         : id(id_), pos(pos_) {}
-    int id;
+    BoardEntry id;
     BoardPosition pos;
 };
 

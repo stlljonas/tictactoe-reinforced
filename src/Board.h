@@ -3,31 +3,28 @@
 
 #include <list>
 #include <array>
-
-enum BoardEntry {
-    None = 0,
-    X = 1,
-    O = 2
-};
-
-#define X BoardEntry::X
-#define O BoardEntry::O
-
-struct BoardPosition {
-    BoardPosition(int row_, int col_)
-        : row(row_), col(col_) {}
-    friend bool operator==(const BoardPosition& pos1, const BoardPosition& pos2);
-    int row;
-    int col;
-};
+#include "BoardEntry.h"
+#include "Action.h"
 
 struct Board {
+    Board() = default;
+    Board(unsigned long hash) {
+        this->construct(hash);
+    }
     std::string string() const;
     std::list<BoardPosition> freePositions() const;
     bool isFreePosition(BoardPosition pos) const;
+    bool isWinner(const BoardEntry entry) const;
     void reset();
+    const BoardEntry& operator[](int index) const;
     std::array<std::array<BoardEntry, 3>, 3> array = {};
     std::string boardEntryToString(BoardEntry entry) const;
+    double reward(const BoardEntry& player, const BoardEntry& opponent) const;
+    void move(Action action);
+    const static int NUMBER_OF_FIELDS = 9;
+    const static int NUMBER_OF_STATES = 19683;    //  {None, X, O} ^ 9 fields on the board
+    unsigned long hash() const;
+    void construct(unsigned long hash);
 };
 
 #endif /* BOARD_H */

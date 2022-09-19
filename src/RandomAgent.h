@@ -1,11 +1,11 @@
-#ifndef REAL_AGENT_H
-#define REAL_AGENT_H
+#ifndef RANDOM_AGENT_H
+#define RANDOM_AGENT_H
 
 #include "IAgent.h"
 
-class RealAgent : public IAgent {
+class RandomAgent : public IAgent {
     public:
-        RealAgent(BoardEntry id, std::string name = "Anonymous")
+        RandomAgent(BoardEntry id, std::string name = "RandomAgent") 
         : _id(id),
         _name(name) {};
         BoardEntry id() const override;
@@ -17,4 +17,4 @@ class RealAgent : public IAgent {
         const std::string _name;
 };
 
-#endif /* REAL_AGENT_H */
+#endif /* RANDOM_AGENT_H */
