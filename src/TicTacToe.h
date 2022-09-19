@@ -46,7 +46,6 @@ class TicTacToe {
         double winLossRatio(const IAgent& player) const;
         void reset();
         void reset(IAgent* player1P, IAgent* player2P);
-        void setLearning(bool input);
 
     private:
         Board _board = Board();
@@ -61,7 +60,6 @@ class TicTacToe {
         int _numberOfGamesPlayed = 0;
         int _numberOfInvalidInputs = 0;
         const int _maxInvalidInputs = 3;
-        bool _learning = true;
         void _play(Action act);
         void _gameOver();
         bool _isWinner(BoardEntry id) const;

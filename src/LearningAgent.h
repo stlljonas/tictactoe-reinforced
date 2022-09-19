@@ -15,14 +15,18 @@ class LearningAgent : public IAgent {
         void processGame(std::list<Board> boardSequence) override;
         void initialize();
         double value(unsigned long hash) const;
-        void setExplore(bool enable);
+        double explorationRate() const;
+        void setExplorationRate(double explorationRate);
+        void setLearning(bool enable);
+        double* valueFunction();
 
 
     private:
-        const double _discountRate = 0.75;
-        const double _learningRate = 0.01;
-        const double _explorationRate = 0.1;
+        // const double _discountRate = 0.9;
+        double _learningRate = 0.7;
+        double _explorationRate = 0.1;
         bool _explore = true;
+        bool _learning = true;
         const BoardEntry _id;
         const std::string _name;
         double _valueFunction[Board::NUMBER_OF_STATES] = {};

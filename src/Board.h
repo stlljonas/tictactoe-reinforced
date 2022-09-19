@@ -19,7 +19,7 @@ struct Board {
     const BoardEntry& operator[](int index) const;
     std::array<std::array<BoardEntry, 3>, 3> array = {};
     std::string boardEntryToString(BoardEntry entry) const;
-    double reward(const BoardEntry& player, const BoardEntry& opponent) const;
+    double reward(const BoardEntry& playerId) const;
     void move(Action action);
     const static int NUMBER_OF_FIELDS = 9;
     const static int NUMBER_OF_STATES = 19683;    //  {None, X, O} ^ 9 fields on the board

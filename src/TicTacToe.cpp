@@ -123,10 +123,8 @@ void TicTacToe::_play(Action act) {
 }
 
 void TicTacToe::_gameOver() {
-    if (_learning) {
-        _player1P->processGame(_boardSequence);
-        _player2P->processGame(_boardSequence);
-    }
+    _player1P->processGame(_boardSequence);
+    _player2P->processGame(_boardSequence);
     _gameState = GameState::EXIT;
 }
 
@@ -176,10 +174,6 @@ void TicTacToe::reset(IAgent* player1P, IAgent* player2P) {
     _player1P = player1P;
     _player2P = player2P;
     reset();
-}
-
-void TicTacToe::setLearning(bool input) {
-    _learning = input;
 }
 
 bool TicTacToe::_isValidAction(Action act) const {

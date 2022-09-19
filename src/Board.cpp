@@ -98,13 +98,19 @@ bool Board::isWinner(const BoardEntry entry) const {
     return false;
 }
 
-double Board::reward(const BoardEntry& playerEntry, const BoardEntry& opponentEntry) const {
-    if (isWinner(playerEntry)) {
+double Board::reward(const BoardEntry& playerId) const {
+    BoardEntry opponentId;
+    if (playerId == X) {
+        opponentId = O;
+    } else if (playerId == O) {
+        opponentId = X;
+    }
+    if (isWinner(playerId)) {
         return 1.0;
-    } else if (isWinner(opponentEntry)) {
-        return -1.0;
-    } else if (freePositions().size() == 0) {
-        return 0.5;
+    } else if (isWinner(opponentId)) {
+        return 0.0;
+    // } else if (freePositions().size() == 0) {
+    //     return 0.5;
     } else {
         return 0.0;
     }
@@ -133,7 +139,7 @@ unsigned long Board::hash() const {
 }
 
 void Board::construct(unsigned long hash) {
-    for (int field = Board::NUMBER_OF_FIELDS; field > 0; --field) {
+    for (int field = 0; field < NUMBER_OF_FIELDS; ++field) {
         array[field/3][field%3] = BoardEntry(hash%3);
         hash /= 3;
     }
