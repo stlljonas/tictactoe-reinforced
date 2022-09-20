@@ -12,6 +12,7 @@ struct Board {
         this->construct(hash);
     }
     std::string string() const;
+    std::string stringWithNumbers() const;
     std::list<BoardPosition> freePositions() const;
     bool isFreePosition(BoardPosition pos) const;
     bool isWinner(const BoardEntry entry) const;
