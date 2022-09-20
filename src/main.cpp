@@ -1,64 +1,87 @@
 #include "TicTacToe.h"
 #include "IAgent.h"
-#include "AutoAgent.h"
+#include "RandomAgent.h"
 #include "RealAgent.h"
+#include "LearningAgent.h"
+#include "Board.h"
 #include <iostream>
+#include <random>
+#include <time.h>
+#include <cmath>
+#include <algorithm>
+#include <iterator>
+
+const int nTrainingEpochs = 100;
+const int nGamesPerEpoch = 1000;
+const int nValidationGames = 1000;
+
+LearningAgent learner = LearningAgent(O, "LEARNER");
+RealAgent user = RealAgent(X, "USER");
+RandomAgent gambler = RandomAgent(X, "RANDOM_AGENT");
+LearningAgent adverserialLearner = LearningAgent(X, "ADVERSERIAL");
+TicTacToe ttt = TicTacToe(&learner, &adverserialLearner);
+TicTacToe tttValidate = TicTacToe(&learner, &gambler);
+TicTacToe tttTest = TicTacToe(&learner, &user);
 
 int main (int argc, char *argv[]) {
-    // we need a board that has the ttt state and all the
-    // methods needed to play the game
-    // we will have TWO agents that have policie and interact
-    // with the board
+    std::srand(time(0));
+    learner.initialize();
+    adverserialLearner.initialize();
 
-    RealAgent player1 = RealAgent(1);
-    AutoAgent player2 = AutoAgent(2);
-    TicTacToe ttt = TicTacToe(player1, player2);
+    double rate = learner.explorationRate();
+    learner.setExplorationRate(0.0);
+    learner.setLearning(false);
+    tttValidate.reset();
+    for (int g = 0; g < nValidationGames; ++g) {
+        tttValidate.game();
+    }
 
-    while(ttt.gameState() != GameState::EXIT){
-        switch(ttt.gameState()) {
-            case GameState::START: {
-                std::cout << "Tic Tac Toe!\n";
-                 std::cout << "Type \"s\" to start, \"e\" to exit!\n"
-                << "Press Enter to confirm ";
-                std::string selection;
-                std::cin >> selection;
-                if (selection == "s") {
-                    ttt.start(player1);
-                    std::cout << ttt.string() << std::endl;
-                } else if (selection == "e") {
-                    std::cout << "Terminating.\n";
-                    ttt.exit();
-                } else {
-                    std::cout << "ERROR: Invalid Input!\n";
-                }
-                break;
-            }
-            case GameState::TURN_PLAYER: {
-                if (ttt.currentPlayerId() == player1.id()) {
-                    ttt.round(player1.nextAction(ttt.board()));  
-                } else if (ttt.currentPlayerId() == player2.id()) {
-                    ttt.round(player2.nextAction(ttt.board()));  
-                }
-                std::cout << ttt.string() << std::endl;
-                break;
-            }
-            case GameState::WIN_PLAYER_1: {
-                std::cout << "\n\n" << player1.name() << " won!\n\n\n";
-                ttt.reset();
-                break;
-            }
-            case GameState::WIN_PLAYER_2: {
-                std::cout << "\n\n" << player2.name() << " won!\n\n\n";
-                ttt.reset();
-                break;
-            }
-            case GameState::TIE:
-                std::cout << "\n\n" << "There was a tie!\n\n\n";
-                ttt.reset();
-                break;
-            default:
-                ttt.exit();
-                break;
+    std::cout << "EPOCH " << 0 << "| Approximated win ratio against random player: "
+        << static_cast<double>(tttValidate.numberOfGamesWon(learner))
+        / (static_cast<double>(tttValidate.numberOfGamesWon(learner))
+        + static_cast<double>(tttValidate.numberOfGamesWon(gambler)))
+        << std::endl;
+
+    // Training
+    std::cout << "Training " << ttt.player1P()->name()
+        << " against " << ttt.player2P()->name() << std::endl;
+    
+    Fitness lastValuefunction[Board::NUMBER_OF_STATES];
+    for (int i = 0; i < Board::NUMBER_OF_STATES; ++i) {
+        lastValuefunction[i] = learner.fitnessFunction()[i];
+    }
+
+    for (int e = 1; e < nTrainingEpochs; ++e) {
+        learner.setExplorationRate(rate);
+        learner.setLearning(true);
+        for (int g = 0; g < nGamesPerEpoch; ++g) {
+            ttt.game();
         }
+        rate = learner.explorationRate();
+        learner.setExplorationRate(0.0);
+        learner.setLearning(false);
+        tttValidate.reset();
+        for (int g = 0; g < nValidationGames; ++g) {
+            tttValidate.game();
+        }
+        double ssd = 0;
+        for (int i = 0; i < Board::NUMBER_OF_STATES; ++i) {
+            Fitness a = lastValuefunction[i];
+            Fitness b = learner.fitnessFunction()[i];
+            ssd += pow(a.fitness() - b.fitness(), 2);
+        }
+        for (int i = 0; i < Board::NUMBER_OF_STATES; ++i) {
+            lastValuefunction[i] = learner.fitnessFunction()[i];
+        }
+
+        std::cout << "EPOCH " << e << "| Approximated win ratio against random player: "
+            << static_cast<double>(tttValidate.numberOfGamesWon(learner))
+            / (static_cast<double>(tttValidate.numberOfGamesWon(learner))
+            + static_cast<double>(tttValidate.numberOfGamesWon(gambler)))
+            << " | change w.r.t. last epoch : " << ssd << std::endl;
+    }
+    tttTest.setVerbosity(Verbosity::NORMAL);
+    while(1) {
+        tttTest.game();
     }
 }

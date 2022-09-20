@@ -1,7 +1,7 @@
 #include "RealAgent.h"
 #include <iostream>
 
-int RealAgent::id() const {
+BoardEntry RealAgent::id() const {
     return _id;
 }
 
@@ -9,9 +9,8 @@ std::string RealAgent::name() const {
     return _name;
 }
 
-Action RealAgent::nextAction(const Board board) const {
-    bool validInput = false;
-    while(not validInput) {
+Action RealAgent::action(const Board board) const {
+    while(1) {
         std::cout << "Type a number between 1 and 9 and press Enter to select one of the free positions.\n"
             << "(numbered left to right and top to bottom): ";
         int selection = 0;
