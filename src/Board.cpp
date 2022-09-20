@@ -108,9 +108,9 @@ double Board::reward(const BoardEntry& playerId) const {
     if (isWinner(playerId)) {
         return 1.0;
     } else if (isWinner(opponentId)) {
-        return 0.0;
-    // } else if (freePositions().size() == 0) {
-    //     return 0.5;
+        return -1.0;
+    } else if (freePositions().size() == 0) {
+        return 0.5;
     } else {
         return 0.0;
     }
