@@ -1,5 +1,10 @@
 #include "LearningAgent.h"
 
+double Fitness::fitness() const {
+    if (numberOfEncounters == 0) return 0;
+    return summedValues / static_cast<double>(numberOfEncounters);
+}
+
 BoardEntry LearningAgent::id() const {
     return _id;
 }
@@ -17,14 +22,14 @@ Action LearningAgent::action(const Board board) const {
         return Action(id(), *position);
     }
     Action bestAction(id(), *position);
-    double maxValue = -999.0;
+    double maxFitness = -999.0;
     // choose action that maximises the value
     while(position != freePos.end()) {
-        Action localAction(id(),*position);
-        double localValue = _expectedValue(localAction, board);
-        if (localValue > maxValue) {
-            maxValue = localValue;
-            bestAction = localAction;
+        Action action(id(),*position);
+        double fitness = _expectedValue(action, board);
+        if (fitness > maxFitness) {
+            maxFitness = fitness;
+            bestAction = action;
         }
         position++;
     }
@@ -33,46 +38,51 @@ Action LearningAgent::action(const Board board) const {
 
 void LearningAgent::processGame(std::list<Board> boardSequence) {
     if (_learning) {
-        double rewardTarget = boardSequence.back().reward(_id);
-        // double valueOfNextState = _valueFunction[boardSequence.back().hash()];
+        double reward = boardSequence.back().reward(_id);
+        // double valueOfNextState = _fitnessFunction[boardSequence.back().hash()];
 
-
-        for (auto board = ++boardSequence.rbegin();
-            board != boardSequence.rend(); board++) {
-            double oldValue = _valueFunction[board->hash()];
-            // std::cout << board->string() << std::endl;
-            // double localReward = board->reward(_id);
-            // double experimentalValue = localReward + _discountRate * valueOfNextState;
-            // double updatedValue = oldValue + _learningRate
-            //     * (experimentalValue - oldValue);
-            double updatedValue = oldValue + (_learningRate * 
-                (rewardTarget - oldValue));
-            _valueFunction[board->hash()] = updatedValue;
-            rewardTarget = updatedValue;
+        for (auto board = boardSequence.begin(); board != boardSequence.end(); board++) {
+            Fitness& fit = _fitnessFunction[board->hash()];
+            fit.numberOfEncounters++;
+            fit.summedValues += static_cast<double>(reward);
         }
+
+        // for (auto board = ++boardSequence.rbegin();
+        //     board != boardSequence.rend(); board++) {
+        //     double oldValue = _fitnessFunction[board->hash()];
+        //     // std::cout << board->string() << std::endl;
+        //     // double localReward = board->reward(_id);
+        //     // double experimentalValue = localReward + _discountRate * valueOfNextState;
+        //     // double updatedValue = oldValue + _learningRate
+        //     //     * (experimentalValue - oldValue);
+        //     double updatedValue = oldValue + (_learningRate * 
+        //         (rewardTarget - oldValue));
+        //     _fitnessFunction[board->hash()] = updatedValue;
+        //     rewardTarget = updatedValue;
+        // }
 
         // for (auto board = boardSequence.rbegin();
         //     board != boardSequence.rend(); ++board) {
         //     unsigned long hash = board->hash();
         //     //std::cout << board->string() << std::endl;
         //     double boardValue = board->reward(_id);
-        //     double oldValue =  _valueFunction[hash];
+        //     double oldValue =  _fitnessFunction[hash];
         //     int idx = std::distance(board, boardSequence.rbegin());
         //     double discount = pow(_discountRate, idx);
         //     double discountedValue = discount * value;
         //     double newValue = oldValue + _learningRate
         //         * (discountedValue - oldValue);
-        //     _valueFunction[hash] = newValue;
+        //     _fitnessFunction[hash] = newValue;
         // }
-        if (_learningRate > 0.01) {
-            _learningRate -= 0.000001;
-        }
+        // if (_learningRate > 0.01) {
+        //     _learningRate -= 0.000001;
+        // }
     }
 }
 
-double LearningAgent::value(unsigned long hash) const {
-    return _valueFunction[hash];
-}
+// double LearningAgent::value(unsigned long hash) const {
+//     return _fitnessFunction[hash];
+// }
 
 void LearningAgent::initialize() {
     // for (int hash = 0; hash < Board::NUMBER_OF_STATES; ++hash) {
@@ -105,11 +115,16 @@ void LearningAgent::setLearning(bool enable) {
     _learning = enable;
 }
 
-double* LearningAgent::valueFunction() {
-    return _valueFunction;
+// double* LearningAgent::valueFunction() {
+//     return _fitnessFunction;
+// }
+
+const Fitness* LearningAgent::fitnessFunction() const {
+    return _fitnessFunction;
 }
+
 
 double LearningAgent::_expectedValue(Action localAction, Board localBoard) const {
     localBoard.move(localAction);
-    return _valueFunction[localBoard.hash()];
+    return _fitnessFunction[localBoard.hash()].fitness();
 }

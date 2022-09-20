@@ -11,9 +11,9 @@
 #include <algorithm>
 #include <iterator>
 
-const int nTrainingEpochs = 1000;
-const int nGamesPerEpoch = 100;
-const int nValidationGames = 10000;
+const int nTrainingEpochs = 100;
+const int nGamesPerEpoch = 1000;
+const int nValidationGames = 1000;
 
 LearningAgent learner = LearningAgent(O, "LEARNER");
 RealAgent user = RealAgent(X, "USER");
@@ -28,8 +28,8 @@ int main (int argc, char *argv[]) {
     learner.initialize();
     adverserialLearner.initialize();
 
-    //double rate = learner.explorationRate();
-    // learner.setExplorationRate(0.0);
+    double rate = learner.explorationRate();
+    learner.setExplorationRate(0.0);
     learner.setLearning(false);
     tttValidate.reset();
     for (int g = 0; g < nValidationGames; ++g) {
@@ -46,19 +46,19 @@ int main (int argc, char *argv[]) {
     std::cout << "Training " << ttt.player1P()->name()
         << " against " << ttt.player2P()->name() << std::endl;
     
-    double lastValuefunction[Board::NUMBER_OF_STATES];
+    Fitness lastValuefunction[Board::NUMBER_OF_STATES];
     for (int i = 0; i < Board::NUMBER_OF_STATES; ++i) {
-        lastValuefunction[i] = learner.valueFunction()[i];
+        lastValuefunction[i] = learner.fitnessFunction()[i];
     }
 
     for (int e = 1; e < nTrainingEpochs; ++e) {
-        // learner.setExplorationRate(rate);
+        learner.setExplorationRate(rate);
         learner.setLearning(true);
         for (int g = 0; g < nGamesPerEpoch; ++g) {
             ttt.game();
         }
-        // rate = learner.explorationRate();
-        // learner.setExplorationRate(0.0);
+        rate = learner.explorationRate();
+        learner.setExplorationRate(0.0);
         learner.setLearning(false);
         tttValidate.reset();
         for (int g = 0; g < nValidationGames; ++g) {
@@ -66,10 +66,12 @@ int main (int argc, char *argv[]) {
         }
         double ssd = 0;
         for (int i = 0; i < Board::NUMBER_OF_STATES; ++i) {
-            ssd += pow(lastValuefunction[i] - learner.valueFunction()[i], 2);
+            Fitness a = lastValuefunction[i];
+            Fitness b = learner.fitnessFunction()[i];
+            ssd += pow(a.fitness() - b.fitness(), 2);
         }
         for (int i = 0; i < Board::NUMBER_OF_STATES; ++i) {
-            lastValuefunction[i] = learner.valueFunction()[i];
+            lastValuefunction[i] = learner.fitnessFunction()[i];
         }
 
         std::cout << "EPOCH " << e << "| Approximated win ratio against random player: "
