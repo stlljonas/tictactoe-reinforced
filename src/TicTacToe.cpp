@@ -41,15 +41,17 @@ void TicTacToe::game() {
                     start(_player2P);
                 }
                 if (_verbosity >= Verbosity::NORMAL) {
-                    std::cout << "Starting New Game.\n";
+                    std::cout << "\nStarting New Game\n";
                     std::cout << string() << std::endl;
                 }
                 break;
             }
             case GameState::TURN_PLAYER: {
-                _play(_nextAction());
                 if (_verbosity >= Verbosity::NORMAL) {
                     std::cout << _currentPlayerP->name() << "'s turn:\n";
+                }
+                _play(_nextAction());
+                if (_verbosity >= Verbosity::NORMAL) {
                     std::cout << string() << std::endl;
                 }
                 break;
