@@ -75,22 +75,22 @@ double LearningAgent::value(unsigned long hash) const {
 }
 
 void LearningAgent::initialize() {
-    for (int hash = 0; hash < Board::NUMBER_OF_STATES; ++hash) {
-        Board board(hash);
-        _valueFunction[hash] = 0.5;
-        if (board.isWinner(_id)) {
-            _valueFunction[hash] = 1;
-        }
-        BoardEntry otherId;
-        if (_id == X) {
-            otherId = O;
-        } else if (_id == O) {
-            otherId = X;
-        }
-        if (board.isWinner(otherId)) {
-            _valueFunction[hash] = 0;
-        }
-    }
+    // for (int hash = 0; hash < Board::NUMBER_OF_STATES; ++hash) {
+    //     Board board(hash);
+    //     _fitnessFunction[hash] = 0.5;
+    //     if (board.isWinner(_id)) {
+    //         _fitnessFunction[hash] = 1;
+    //     }
+    //     BoardEntry otherId;
+    //     if (_id == X) {
+    //         otherId = O;
+    //     } else if (_id == O) {
+    //         otherId = X;
+    //     }
+    //     if (board.isWinner(otherId)) {
+    //         _fitnessFunction[hash] = 0;
+    //     }
+    // }
 }
 
 void LearningAgent::setExplorationRate(double rate) {
