@@ -39,7 +39,7 @@ class TicTacToe {
         const IAgent* player2P() const;
         void game();
         void start();
-        void start(const IAgent& startingPlayer);
+        void start(IAgent* startingPlayer);
         void setVerbosity(Verbosity verbosity);
         int numberOfGamesWon(const IAgent& player) const;
         int numberOfGamesPlayed() const;
@@ -53,7 +53,7 @@ class TicTacToe {
         GameState _gameState = GameState::START;
         IAgent* _player1P;
         IAgent* _player2P; 
-        BoardEntry _currentPlayerId;
+        IAgent* _currentPlayerP;
         Verbosity _verbosity = Verbosity::SILENT;
         int _numberOfGamesWonPlayer1 = 0;
         int _numberOfGamesWonPlayer2 = 0;
@@ -65,7 +65,7 @@ class TicTacToe {
         bool _isWinner(BoardEntry id) const;
         bool _isValidAction(Action act) const;
         Action _nextAction() const;
-        BoardEntry _nextPlayerId(BoardEntry currentPlayerId) const;
+        IAgent* _nextPlayerP(IAgent* currentPlayerId) const;
         void _setPosition(BoardEntry id, int row, int col);
         BoardEntry _idToBoardEntry(int id) const;
         IAgent& _idToPlayer(BoardEntry id) const;
