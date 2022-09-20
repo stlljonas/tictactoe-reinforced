@@ -28,6 +28,36 @@ std::string Board::string() const {
     return boardString;
 }
 
+std::string Board::stringWithNumbers() const {
+
+    // e.g.
+    // +---+---+---+
+    // | X | O | 3 |
+    // +---+---+---+
+    // | 4 | X | 6 |
+    // +---+---+---+
+    // | O | 8 | X |
+    // +---+---+---+
+
+    std::string boardString = "+---+---+---+";
+    for (int row = 0; row < 3; ++row) {
+        boardString += "\n|";
+        for (int col = 0; col < 3; ++col) {
+            boardString += " ";
+            BoardEntry entry = array[row][col];
+            if (entry == No) {
+                boardString += std::to_string(row*3+(col+1));
+            } else {
+                boardString += boardEntryToString(entry);
+            }
+            boardString += " ";
+            boardString += "|";
+        }
+        boardString += "\n+---+---+---+";
+    }
+    return boardString;
+}
+
 std::string Board::boardEntryToString(BoardEntry entry) const {
         switch(entry) {
             case(BoardEntry::None):

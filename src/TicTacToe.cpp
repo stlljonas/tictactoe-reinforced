@@ -36,16 +36,20 @@ void TicTacToe::game() {
                 // randomly select starting player
                 bool randomBool = std::round((double)rand()/(double)RAND_MAX);
                 if (randomBool) {
-                    start(*_player1P);
+                    start(_player1P);
                 } else {
-                    start(*_player2P);
+                    start(_player2P);
                 }
                 if (_verbosity >= Verbosity::NORMAL) {
+                    std::cout << "\nStarting New Game\n";
                     std::cout << string() << std::endl;
                 }
                 break;
             }
             case GameState::TURN_PLAYER: {
+                if (_verbosity >= Verbosity::NORMAL) {
+                    std::cout << _currentPlayerP->name() << "'s turn:\n";
+                }
                 _play(_nextAction());
                 if (_verbosity >= Verbosity::NORMAL) {
                     std::cout << string() << std::endl;
@@ -87,14 +91,14 @@ void TicTacToe::game() {
 }
 
 void TicTacToe::start() {
-    start(*_player1P);
+    start(_player1P);
 }
 
-void TicTacToe::start(const IAgent& startingPlayer) {
+void TicTacToe::start(IAgent* startingPlayer) {
     _board.reset();
     _boardSequence.clear();
     _boardSequence.push_back(_board);
-    _currentPlayerId = startingPlayer.id();
+    _currentPlayerP = startingPlayer;
     _numberOfInvalidInputs = 0;
     _gameState = GameState::TURN_PLAYER;
 
@@ -111,7 +115,7 @@ void TicTacToe::_play(Action act) {
         _numberOfInvalidInputs = 0;
         _board.move(act);
         _boardSequence.push_back(_board);
-        _currentPlayerId = _nextPlayerId(_currentPlayerId);
+        _currentPlayerP = _nextPlayerP(_currentPlayerP);
     }
     if (_isWinner(_player1P->id())) {
         _gameState = GameState::WIN_PLAYER_1;
@@ -177,13 +181,13 @@ void TicTacToe::reset(IAgent* player1P, IAgent* player2P) {
 }
 
 bool TicTacToe::_isValidAction(Action act) const {
-    return _board.isFreePosition(act.pos) && _currentPlayerId == act.id;
+    return _board.isFreePosition(act.pos) && _currentPlayerP->id() == act.id;
 }
 
 Action TicTacToe::_nextAction() const {
-    if (_currentPlayerId == _player1P->id()) {
+    if (_currentPlayerP == _player1P) {
         return _player1P->action(_board);
-    } else if (_currentPlayerId == _player2P->id()) {
+    } else if (_currentPlayerP == _player2P) {
         return _player2P->action(_board);
     } else {
         return Action(BoardEntry::None,BoardPosition(0,0));
@@ -194,13 +198,13 @@ bool TicTacToe::_isWinner(BoardEntry id) const {
     return _board.isWinner(id);
 }
 
-BoardEntry TicTacToe::_nextPlayerId(BoardEntry currentPlayerId) const {
-    if (currentPlayerId == _player1P->id()) {
-        return _player2P->id();
-    } else if (currentPlayerId == _player2P->id()) {
-        return _player1P->id();
+IAgent* TicTacToe::_nextPlayerP(IAgent* currentPlayerP) const {
+    if (currentPlayerP == _player1P) {
+        return _player2P;
+    } else if (currentPlayerP == _player2P) {
+        return _player1P;
     }
-    return BoardEntry::None;
+    return nullptr;
 }
 
 void TicTacToe::_setPosition(BoardEntry id, int row, int col) {

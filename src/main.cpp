@@ -11,9 +11,11 @@
 #include <algorithm>
 #include <iterator>
 
+
 const int nTrainingEpochs = 100;
 const int nGamesPerEpoch = 1000;
 const int nValidationGames = 1000;
+const double trainingTolerance = 0.000001;
 
 LearningAgent learner = LearningAgent(O, "LEARNER");
 RealAgent user = RealAgent(X, "USER");
@@ -73,13 +75,18 @@ int main (int argc, char *argv[]) {
         for (int i = 0; i < Board::NUMBER_OF_STATES; ++i) {
             lastValuefunction[i] = learner.fitnessFunction()[i];
         }
-
-        std::cout << "EPOCH " << e << "| Approximated win ratio against random player: "
-            << static_cast<double>(tttValidate.numberOfGamesWon(learner))
+        double winRatio =
+            static_cast<double>(tttValidate.numberOfGamesWon(learner))
             / (static_cast<double>(tttValidate.numberOfGamesWon(learner))
-            + static_cast<double>(tttValidate.numberOfGamesWon(gambler)))
-            << " | change w.r.t. last epoch : " << ssd << std::endl;
+            + static_cast<double>(tttValidate.numberOfGamesWon(gambler)));
+        std::cout << "EPOCH " << e << "| Approximated win ratio against random player: "
+            << winRatio << "| change w.r.t. last epoch : " << ssd << std::endl;
+        if (abs(winRatio-1) < trainingTolerance) {
+            std::cout << "Convergence criterion hit!\nTraining completed\n";
+            break;
+        }
     }
+    // Let User play against Reinforcement Learning Agent
     tttTest.setVerbosity(Verbosity::NORMAL);
     while(1) {
         tttTest.game();

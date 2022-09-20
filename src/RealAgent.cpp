@@ -11,6 +11,7 @@ std::string RealAgent::name() const {
 
 Action RealAgent::action(const Board board) const {
     while(1) {
+        std::cout << board.stringWithNumbers() << std::endl;
         std::cout << "Type a number between 1 and 9 and press Enter to select one of the free positions.\n"
             << "(numbered left to right and top to bottom): ";
         int selection = 0;
